@@ -876,13 +876,15 @@ def idle_tasks(msg):
     if role == "kitchen":
         items = IDLE_KITCHEN
         title = "👨‍🍳 Задачи кухни на простой"
+        back = kitchen_menu()
     else:
         items = IDLE_CASHIER
         title = "🧾 Задачи кассира на простой"
+        back = cashier_menu()
     text = f"😴 <b>{title}</b>\n\n"
     for i, item in enumerate(items, 1):
         text += f"{i}. {item}\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML")
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=back)
 
 # Обновляем меню кассира и кухни с новыми кнопками
 def cashier_menu():
