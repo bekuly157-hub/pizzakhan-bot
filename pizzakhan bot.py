@@ -696,5 +696,211 @@ def show_purchase(msg):
         text += f"• {name}: есть {qty}, нужно мин. {mn}\n"
     bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
 
+# ── ЗАДАЧИ НА ПРОСТОЙ ────────────────────────────────────────────────────────
+IDLE_CASHIER = [
+    "🧹 Протереть все столы и стулья в зале",
+    "🧹 Протереть барную стойку и полки",
+    "🍯 Протереть и пополнить сиропы",
+    "📦 Проверить и пополнить упаковку на стойке",
+    "🥤 Проверить и пополнить напитки в холодильнике",
+    "🫙 Пополнить соусницы (кетчуп, майонез)",
+    "🚽 Проверить и убрать туалет",
+    "📱 Проверить агрегаторы — нет ли новых заказов",
+    "🧽 Вымыть посуду если есть",
+    "🗑 Проверить мусор — вынести если полный",
+]
+
+IDLE_KITCHEN = [
+    "🧹 Убрать и протереть рабочую станцию",
+    "🔪 Нарезать дополнительные овощи про запас",
+    "🧀 Натереть дополнительный сыр",
+    "🌭 Нарезать дополнительную колбасу",
+    "🍗 Проверить курицу на разморозке",
+    "📊 Проверить и обновить остатки в боте",
+    "🛢 Проверить масло фритюра",
+    "🧽 Помыть инвентарь и лотки",
+    "❄️ Проверить порядок в холодильнике",
+    "🧹 Подмести и помыть полы на кухне",
+]
+
+# ── ПЕРЕДАЧА СМЕНЫ ────────────────────────────────────────────────────────────
+HANDOVER_NIGHT = [
+    "💵 Деньги пересчитаны и сфотографированы",
+    "🗑 Мусор вынесен",
+    "🧹 Полы на кухне помыты",
+    "🧽 Столы и поверхности на кухне помыты",
+    "❄️ Заготовки убраны в холодильник/морозилку",
+    "📱 Рабочий телефон заряжен",
+    "🔌 Всё оборудование выключено (кроме холодильников)",
+    "🚽 Туалет убран",
+    "🧹 Зал убран, столы протёрты",
+]
+
+HANDOVER_STOCKS = [
+    ("🍗 Курица для донера (кг)", 5),
+    ("🍗 Курица для пиццы (кг)", 5),
+    ("🍞 Булочки (шт)", 40),
+    ("🌯 Лаваш (шт)", 100),
+    ("🧀 Сыр натёртый (кг)", 15),
+    ("🥤 Кола 1л (шт)", 10),
+    ("🍟 Фри (кг)", 10),
+    ("🍕 Тесто малое (шт)", 30),
+    ("🍕 Тесто среднее (шт)", 30),
+]
+
+handover_session = {}
+
+@bot.message_handler(func=lambda m: m.text == "🔄 Передача смены")
+def start_handover(msg):
+    uid = msg.from_user.id
+    handover_session[uid] = {
+        "step": "checklist",
+        "idx": 0,
+        "results": [],
+        "stocks": {},
+        "stock_idx": 0,
+        "notes": "",
+        "shift": "night"
+    }
+    set_state(uid, step="handover_check")
+    bot.send_message(msg.chat.id,
+        "🔄 <b>Передача смены</b>\n\nПроходим по чеклисту закрытия:",
+        reply_markup=yes_no_kb(), parse_mode="HTML")
+    send_handover_item(uid, msg.chat.id)
+
+def send_handover_item(uid, cid):
+    s = handover_session[uid]
+    idx = s["idx"]
+    if idx >= len(HANDOVER_NIGHT):
+        # Переходим к остаткам
+        s["step"] = "stocks"
+        s["stock_idx"] = 0
+        send_handover_stock(uid, cid)
+        return
+    total = len(HANDOVER_NIGHT)
+    bot.send_message(cid,
+        f"🔄 <b>Передача смены</b> [{idx+1}/{total}]\n\n{HANDOVER_NIGHT[idx]}\n\nВыполнено?",
+        reply_markup=yes_no_kb(), parse_mode="HTML")
+
+def send_handover_stock(uid, cid):
+    s = handover_session[uid]
+    idx = s["stock_idx"]
+    if idx >= len(HANDOVER_STOCKS):
+        # Переходим к замечаниям
+        s["step"] = "notes"
+        set_state(uid, step="handover_notes")
+        bot.send_message(cid,
+            "📝 Есть замечания для следующей смены?\n\nНапишите текст или нажмите 'Нет замечаний'",
+            reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(
+                KeyboardButton("Нет замечаний")))
+        return
+    name, mn = HANDOVER_STOCKS[idx]
+    bot.send_message(cid,
+        f"📊 Остатки [{idx+1}/{len(HANDOVER_STOCKS)}]\n\n<b>{name}</b>\nМинимум: {mn}\n\nСколько осталось?",
+        parse_mode="HTML")
+    set_state(uid, step="handover_stock_input")
+
+@bot.message_handler(func=lambda m: get_state(m.from_user.id).get("step") == "handover_check"
+    and m.text in ["✅ Да", "❌ Нет"])
+def handover_check_answer(msg):
+    uid = msg.from_user.id
+    s = handover_session.get(uid)
+    if not s: return
+    s["results"].append({"item": HANDOVER_NIGHT[s["idx"]], "ok": msg.text == "✅ Да"})
+    s["idx"] += 1
+    send_handover_item(uid, msg.chat.id)
+
+@bot.message_handler(func=lambda m: get_state(m.from_user.id).get("step") == "handover_stock_input")
+def handover_stock_input(msg):
+    uid = msg.from_user.id
+    s = handover_session.get(uid)
+    if not s: return
+    try:
+        qty = float(msg.text.strip().replace(",", "."))
+        name, mn = HANDOVER_STOCKS[s["stock_idx"]]
+        s["stocks"][name] = qty
+        s["stock_idx"] += 1
+        send_handover_stock(uid, msg.chat.id)
+    except:
+        bot.send_message(msg.chat.id, "Введите число:")
+
+@bot.message_handler(func=lambda m: get_state(m.from_user.id).get("step") == "handover_notes")
+def handover_notes(msg):
+    uid = msg.from_user.id
+    s = handover_session.get(uid)
+    if not s: return
+    s["notes"] = "" if msg.text == "Нет замечаний" else msg.text
+    finish_handover(uid, msg.chat.id, msg.from_user.first_name)
+
+def finish_handover(uid, cid, name):
+    s = handover_session[uid]
+    failed = [r["item"] for r in s["results"] if not r["ok"]]
+    low = [(n, q, mn) for (n, mn), q in zip(HANDOVER_STOCKS, s["stocks"].values()) if q < mn]
+
+    # Сообщение сотруднику
+    text = f"✅ <b>Смена сдана!</b>\n{now_str()}\n"
+    if failed:
+        text += f"\n❌ Не выполнено ({len(failed)}):\n"
+        for f in failed: text += f"• {f}\n"
+    else:
+        text += "\n✅ Всё выполнено!"
+    bot.send_message(cid, text, reply_markup=main_menu(), parse_mode="HTML")
+
+    # Отчёт менеджеру
+    report = f"🔄 <b>ПЕРЕДАЧА СМЕНЫ</b>\n{now_str()}\nСдал: {name}\n\n"
+    done = len([r for r in s["results"] if r["ok"]])
+    total = len(s["results"])
+    report += f"📋 Чеклист: {done}/{total}\n"
+    if failed:
+        report += "\n❌ НЕ ВЫПОЛНЕНО:\n"
+        for f in failed: report += f"• {f}\n"
+    if s["stocks"]:
+        report += "\n📊 ОСТАТКИ:\n"
+        for (name_s, mn), qty in zip(HANDOVER_STOCKS, s["stocks"].values()):
+            warn = " ⚠️" if qty < mn else " ✅"
+            report += f"• {name_s}: {qty}{warn}\n"
+    if low:
+        report += "\n🛒 НУЖНО ЗАКАЗАТЬ:\n"
+        for n, q, mn in low: report += f"• {n}: {q} (мин. {mn})\n"
+    if s["notes"]:
+        report += f"\n📝 ЗАМЕЧАНИЯ:\n{s['notes']}"
+    notify_manager(report)
+    set_state(uid, step="main")
+
+# ── ЗАДАЧИ НА ПРОСТОЙ ─────────────────────────────────────────────────────────
+@bot.message_handler(func=lambda m: m.text == "😴 Нет заказов")
+def idle_tasks(msg):
+    uid = msg.from_user.id
+    state = get_state(uid)
+    role = state.get("step", "cashier")
+    if role == "kitchen":
+        items = IDLE_KITCHEN
+        title = "👨‍🍳 Задачи кухни на простой"
+    else:
+        items = IDLE_CASHIER
+        title = "🧾 Задачи кассира на простой"
+    text = f"😴 <b>{title}</b>\n\n"
+    for i, item in enumerate(items, 1):
+        text += f"{i}. {item}\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML")
+
+# Обновляем меню кассира и кухни с новыми кнопками
+def cashier_menu():
+    kb = ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.row(KeyboardButton("✅ Открытие смены"), KeyboardButton("🔴 Закрытие смены"))
+    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
+    kb.row(KeyboardButton("⛔ Стоп-лист"), KeyboardButton("🥤 Соки"))
+    kb.row(KeyboardButton("📦 Упаковка"), KeyboardButton("⚠️ Возврат/Жалоба"))
+    kb.row(KeyboardButton("🏠 Главное меню"))
+    return kb
+
+def kitchen_menu():
+    kb = ReplyKeyboardMarkup(resize_keyboard=True)
+    kb.row(KeyboardButton("✅ Открытие кухни"), KeyboardButton("🔴 Закрытие кухни"))
+    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
+    kb.row(KeyboardButton("🛢 Замена масла"), KeyboardButton("📊 Остатки кухни"))
+    kb.row(KeyboardButton("🏠 Главное меню"))
+    return kb
+
 print("🍕 Пицца Хан бот v2 запущен!")
 bot.infinity_polling()
