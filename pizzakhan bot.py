@@ -10,38 +10,80 @@ MANAGER_ID = 8770900575
 
 bot = telebot.TeleBot(TOKEN)
 
+# ── ПОСТАВЩИКИ ───────────────────────────────────────────────────────────────
+SUPPLIERS_INFO = {
+    "🥩 Малика":          {"phone": "+77757819250", "items": "Курица, овощи, консервы, соусы — всё кроме упаковки и хозтоваров"},
+    "🌭 Жума":            {"phone": "87754300088",  "items": "Колбаса халяльная, крылышки"},
+    "🍗 Тлекши":          {"phone": "87000000001",  "items": "Курица, крылышки, почти всё по закупу"},
+    "🥤 Coca-Cola":       {"phone": "📱 Через приложение на рабочем телефоне", "items": "Кола, Фанта, Фьюсти, Пико, Спрайт, Вода"},
+    "📦 Boxfood (Хамид)": {"phone": "87750098089",  "items": "Упаковка — коробки, пакеты, стаканы, соусницы"},
+    "🧹 Хозторг":         {"phone": "87000000001",  "items": "Хозтовары, упаковка. Доставка: Асқар ага 87013640638 — 2000 тг"},
+    "🥩 Джафар Ет":       {"phone": "87750007873",  "items": "Фарш говяжий, колбаса"},
+    "🥗 Рахат":           {"phone": "87010000001",  "items": "Овощи"},
+    "🍽 Асторг":          {"phone": "87010000002",  "items": "Всё для ресторана"},
+    "🇷🇺 Анастасия":      {"phone": "87029666565",  "items": "Майонез 10л, кетчуп 5л, томат 5л, наггетсы, стрипсы, котлеты, сырные палочки, огурцы, оливки 3л"},
+    "🧹 Қылышбай":        {"phone": "87024901010",  "items": "Хозтовары"},
+}
+NEARBY = "🏪 Алтай Маркет (Рауан): +77789298545 — работает до 00:00, срочные покупки"
+
 # ── МИНИМАЛЬНЫЕ ЗАПАСЫ ───────────────────────────────────────────────────────
 STOCK_MINS = {
     # Курица
-    "Курица для донера Замороженый (кг)":        5,
-    "Курица для донера на станции готовый ":  3,
-    "Курица для пиццы Замороженый (кг)":         5,
-    "Курица для пиццы на станции":   3,
+    "Курица для донера заморож. (кг)": 5,
+    "Курица для донера на станции (кг)": 3,
+    "Курица для пиццы заморож. (кг)": 5,
+    "Курица для пиццы на станции (кг)": 3,
+    "Чикен (г)": 500,
+    # Мясо
+    "Фарш для пиццы (г)": 500,
+    "Колбаса (шт)": 1,
+    "Охотничья колбаса (г)": 200,
+    "Котлеты куриные (шт)": 20,
     # Бургер
-    "Булочки для бургера (шт)":      40,
-    "Котлеты куриные (шт)":          20,
+    "Булочки для бургера (шт)": 40,
+    "Панировка для бургера (шт)": 1,
     # Тесто
-    "Тесто малое 27см (шт)":              30,
-    "Тесто среднее 33см (шт)":            30,
-    "Тесто большое 35см (шт)":            25,
-    "Тесто малое запас":             50,
-    "Тесто среднее запас":           50,
-    "Тесто большое запас":           25,
+    "Тесто малое 27см (шт)": 30,
+    "Тесто среднее 33см (шт)": 30,
+    "Тесто большое 35см (шт)": 25,
+    "Тесто малое запас (шт)": 50,
+    "Тесто среднее запас (шт)": 50,
+    "Тесто большое запас (шт)": 25,
     # Соусы
-    "Пицца-соус и Донер соус на станции (л)":     3,
-    "Пицца-соус и Донер соус запас (л)":          5,
-    # Лаваш
-    "Лаваш (шт)":                    100,
-    # Сыр
-    "Сыр натёртый (кг)":             15,
-    "Сыр запас (кг)":                15,
-    # Фарш
-    "Фарш для пиццы (кг)":           2,
-    # Фри
-    "Фри картофель (кг)":            10,
+    "Пицца-соус на станции (г)": 2000,
+    "Пицца-соус запас (г)": 3000,
+    "Ранч соус (г)": 1000,
+    "Бургер соус (г)": 1000,
+    "Красный соус донер (г)": 1000,
+    # Сыры
+    "Сыр натёртый (г)": 2000,
+    "Сыр запас (кг)": 15,
+    "Фета перец (г)": 200,
+    # Овощи
+    "Помидоры (г)": 1000,
+    "Перец болгарский (г)": 200,
+    "Айсберг (шт)": 1,
+    "Капуста (шт)": 1,
+    "Грибы (г)": 300,
+    "Лук жуа (пучок)": 1,
+    # Консервы
+    "Ананас (банка)": 1,
+    "Кукуруза (банка)": 1,
+    "Оливки (банка)": 1,
+    "Солёные огурцы (банка)": 1,
+    "Халапеньо (банка)": 1,
+    # Заморозка
+    "Фри картофель (г)": 3000,
+    "Дольки (г)": 1000,
+    "Наггетсы (г)": 500,
+    "Луковые кольца (г)": 500,
+    "Стрипсы (г)": 500,
+    "Сырные палочки (г)": 300,
+    "Лаваш для донера (шт)": 30,
+    # Другое
+    "Мука (кг)": 5,
 }
 
-# ── ЧЕКЛИСТЫ ─────────────────────────────────────────────────────────────────
 CASHIER_OPEN = [
     "💵 Проверить деньги от ночной смены — пересчитать и сфотографировать",
     "💵 Зафиксировать сумму в кассе (внесение в программу)",
@@ -91,19 +133,21 @@ KITCHEN_OPEN = [
     "🔌 Включить Турбошеф и Гриль для донера",
     "🍕 Тесто готово — малое/среднее/большое (проверить количество)",
     "🍅 Пицца-соус готов (из помидоров)",
-    "🧀 Сыр натёртый на станции (мин 15 кг)",
-    "🥩 Фарш отмерен порциями 60г для пиццы (мин 2 кг)",
+    "🧀 Сыр натёртый на станции (мин 2 кг)",
+    "🥩 Фарш отмерен порциями 60г для пиццы (мин 500г)",
     "🌭 Колбаса нарезана",
+    "🌭 Охотничья колбаса нарезана",
     "🍍 Ананас нарезан",
     "🥗 Овощи нарезаны (помидор, перец, грибы, айсберг)",
+    "🌿 Лук жуа нарезан",
     "🍗 Курица для донера разморожена и запечена",
     "🍗 Курица нарезана тонко для донера",
     "🐴 Конина сварена и нарезана",
     "🍔 Котлеты куриные готовы (150г × мин 20 шт)",
     "🍞 Булочки для бургера в наличии (мин 40 шт)",
-    "🌯 Лаваш в наличии (мин 100 шт)",
+    "🌯 Лаваш в наличии (мин 30 шт)",
     "🧀 Проверить запас сыра! Если меньше 30 кг — срочно сообщить менеджеру",
-    "🍟 Фри в наличии (мин 10 кг)",
+    "🍟 Фри в наличии (мин 3 кг)",
     "📊 Проверить все остатки и внести в бот",
 ]
 
@@ -119,34 +163,35 @@ KITCHEN_CLOSE = [
     "🧹 Убрать рабочее место",
 ]
 
-PREP_AYSHA = [
-    "🍗 Промыть/Дефрост курицу (10 кг)",
+PREP_TASKS = [
+    "🍗 Промыть/разморозить курицу (10 кг)",
     "🍗 Замариновать курицу (специи + соус)",
     "🍗 Расфасовать по 1.5–2 кг, убрать в морозилку",
     "🐴 Сварить/потомить конину, заморозить, нарезать",
     "🍔 Приготовить котлеты куриные (150г)",
     "🌿 Замешать чикен-смесь (мука + крахмал + специи)",
     "🍅 Приготовить пицца-соус из помидоров",
-    "🥗 Приготовить соус ранч / донер соус",
+    "🥗 Приготовить ранч соус",
     "🥗 Приготовить красный соус для донера",
     "🥗 Приготовить бургер-соус",
     "🌭 Нарезать колбасу",
-    "🧀 Нарезать фитексу на слайсере",
+    "🌭 Нарезать охотничью колбасу",
+    "🧀 Нарезать фета перец на слайсере",
     "📊 Обновить остатки в боте",
 ]
 
-PREP_LEYLA = [
+DOUGH_TASKS = [
     "🌾 Проверить запас муки и тесто-смеси",
-    "🌾 Замесить тесто (по расписанию — каждый день или через день)",
-    "🍕 Скатать шары — малые (мин 50 шт)",
-    "🍕 Скатать шары — средние (мин 50 шт)",
-    "🍕 Скатать шары — большие (мин 25 шт)",
+    "🌾 Замесить тесто (каждый день или через день)",
+    "🍕 Скатать шары — малые 27см (мин 50 шт)",
+    "🍕 Скатать шары — средние 33см (мин 50 шт)",
+    "🍕 Скатать шары — большие 35см (мин 25 шт)",
     "❄️ Убрать запас в холодильник",
     "📊 Обновить количество теста в боте",
     "⚠️ Если муки мало — сразу сообщить менеджеру",
 ]
 
-ACCOUNTANT = [
+ACCOUNTANT_TASKS = [
     "📥 Внести все приходы от поставщиков во Frontpad",
     "📊 Проверить движение сырья в Frontpad",
     "📊 Сверить остатки в Frontpad с фактическими",
@@ -166,59 +211,97 @@ DELIVERY_CHECK = [
     "📸 Сфотографировать накладную и отправить бухгалтеру",
 ]
 
-# ── МИНИМАЛЬНЫЕ ОСТАТКИ — НАПИТКИ ────────────────────────────────────────────
 DRINKS = [
-    ("Кола 0.5л", 15),
-    ("Кола 1л", 10),
-    ("Кола 2л", 5),
-    ("Фанта 1л", 8),
-    ("Фьюсти 0.5л", 10),
-    ("Фьюсти 1л", 5),
-    ("Пико 1л", 8),
-    ("Вода 0.5л", 10),
-    ("Сарыагаш", 5),
-    ("Детский сок", 10),
-    ("Натуральный сок", 5),
-    ("Спрайт 1л", 5),
+    ("Кола 0.5л", 15), ("Кола 1л", 10), ("Кола 2л", 5),
+    ("Фанта 1л", 5), ("Фьюсти 0.5л", 10), ("Фьюсти 1л", 5),
+    ("Пико 1л", 8), ("Вода 0.5л", 10), ("Сарыагаш", 5),
+    ("Детский сок", 10), ("Натуральный сок", 5), ("Спрайт 1л", 5),
 ]
 
 PACKAGING = [
-    ("Коробка пицца 30", 30),
-    ("Коробка пицца 33", 30),
-    ("Коробка пицца 36", 15),
-    ("Крафт пакет малый", 20),
-    ("Крафт пакет средний", 20),
-    ("Крафт пакет большой", 20),
-    ("Упаковка для фри Крафт ", 40),
-    ("Фри бумажная", 30),
-    ("Донер упаковка", 20),
-    ("Бургер бокс", 20),
-    ("Стакан 350мл", 30),
-    ("Крышки", 50),
-    ("Соусница 30мл + 50мл", 50),
-    ("Салфетки (пачка)", 10),
-    ("Трубочки", 50),
+    ("Пицца коробка 30см", 30), ("Пицца коробка 33см", 30), ("Пицца коробка 36см", 15),
+    ("Крафт пакет малый", 20), ("Крафт пакет средний", 20), ("Крафт пакет большой", 20),
+    ("Большой собой упаковка", 10), ("Маленький собой упаковка", 10),
+    ("Упаковка фри крафт", 40), ("Фри маленькая упаковка", 30),
+    ("Донер упаковка", 20), ("Бургер бокс", 20), ("Чикен бокс маленький", 10),
+    ("Стакан 350мл", 30), ("Крышки", 50), ("Соусница 30мл", 50), ("Соусница 50мл", 30),
+    ("Салфетки (пачка)", 10), ("Трубочки", 50), ("Маечка с ручкой", 20),
+    ("Z-укладка (чековая лента)", 3), ("Рафинад", 5),
+    ("Мусорный пакет большой (рулон)", 2), ("Мусорный пакет маленький (рулон)", 2),
+]
+
+HOUSEHOLD = [
+    ("Доместос", 1), ("Фэри", 1), ("Азелит", 1),
+    ("Моющее для стекла", 1), ("Тряпки для пола", 2),
+    ("Губки", 3), ("Хозяйственное мыло", 1),
+    ("Туалетная бумага (рулон)", 5), ("Перчатки резиновые (пара)", 2),
+    ("Освежитель воздуха", 1), ("Фольга (рулон)", 1),
 ]
 
 SUPPLIERS = [
-    "🍗 Курица",
-    "🥩 Фарш/Конина",
-    "🌭 Колбаса",
-    "🍞 Булочки",
-    "🌯 Лаваш",
-    "🧀 Сыр (заказать )",
-    "🥤 Напитки (Coca-Cola)",
-    "📦 Упаковка",
-    "🍯 Соусы/Майонез",
-    "☕ Сиропы/Кофе",
-    "🧹 Хозтовары",
-    "❄️ Заморозка",
+    "🍗 Курица", "🥩 Фарш/Конина", "🌭 Колбаса", "🍞 Булочки",
+    "🌯 Лаваш", "🧀 Сыр (заказать)", "🥤 Напитки (Coca-Cola)",
+    "📦 Упаковка", "🍯 Соусы/Майонез", "☕ Сиропы/Кофе",
+    "🧹 Хозтовары", "❄️ Заморозка", "🥗 Овощи/Консервы",
+]
+
+IDLE_CASHIER = [
+    "🧹 Протереть все столы и стулья в зале",
+    "🧹 Протереть барную стойку и полки",
+    "🍯 Протереть и пополнить сиропы",
+    "📦 Проверить и пополнить упаковку на стойке",
+    "🥤 Проверить и пополнить напитки в холодильнике",
+    "🫙 Пополнить соусницы (кетчуп, сырный соус)",
+    "🚽 Проверить туалет, убрать, пополнить бумагу",
+    "📱 Проверить агрегаторы — нет ли новых заказов",
+    "🧽 Вымыть посуду если есть",
+    "🗑 Проверить мусор — вынести если полный",
+]
+
+IDLE_KITCHEN = [
+    "🧹 Убрать и протереть рабочую станцию",
+    "🔪 Нарезать дополнительные овощи про запас",
+    "🧀 Натереть дополнительный сыр",
+    "🌭 Нарезать дополнительную колбасу",
+    "🍗 Проверить курицу на разморозке",
+    "📊 Проверить и обновить остатки в боте",
+    "🛢 Проверить масло фритюра",
+    "🧽 Помыть инвентарь и лотки",
+    "❄️ Проверить порядок в холодильнике",
+    "🧹 Подмести и помыть полы на кухне",
+]
+
+HANDOVER_NIGHT = [
+    "💵 Деньги пересчитаны и сфотографированы",
+    "🗑 Мусор вынесен",
+    "🧹 Полы на кухне помыты",
+    "🧽 Столы и поверхности на кухне помыты",
+    "❄️ Заготовки убраны в холодильник/морозилку",
+    "📱 Рабочий телефон заряжен",
+    "🔌 Всё оборудование выключено (кроме холодильников)",
+    "🚽 Туалет убран",
+    "🧹 Зал убран, столы протёрты",
+]
+
+HANDOVER_STOCKS = [
+    ("Курица для донера (кг)", 5),
+    ("Курица для пиццы (кг)", 5),
+    ("Булочки (шт)", 40),
+    ("Лаваш (шт)", 30),
+    ("Сыр натёртый (кг)", 2),
+    ("Кола 1л (шт)", 10),
+    ("Фри (кг)", 3),
+    ("Тесто малое (шт)", 30),
+    ("Тесто среднее (шт)", 30),
+    ("Пицца-соус (г)", 2000),
+    ("Котлеты куриные (шт)", 20),
 ]
 
 # ── СОСТОЯНИЕ ────────────────────────────────────────────────────────────────
 user_state = {}
 checklist_session = {}
 stock_session = {}
+handover_session = {}
 stoplist = {
     "Пицца": True, "Донер": True, "Бургер": True,
     "Чикен": True, "Фри": True, "Кофе": True, "Наггетсы": True
@@ -248,16 +331,18 @@ def main_menu():
 def cashier_menu():
     kb = ReplyKeyboardMarkup(resize_keyboard=True)
     kb.row(KeyboardButton("✅ Открытие смены"), KeyboardButton("🔴 Закрытие смены"))
+    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
     kb.row(KeyboardButton("⛔ Стоп-лист"), KeyboardButton("🥤 Соки"))
     kb.row(KeyboardButton("📦 Упаковка"), KeyboardButton("⚠️ Возврат/Жалоба"))
-    kb.row(KeyboardButton("🏠 Главное меню"))
+    kb.row(KeyboardButton("🔔 Пейджер"), KeyboardButton("🏠 Главное меню"))
     return kb
 
 def kitchen_menu():
     kb = ReplyKeyboardMarkup(resize_keyboard=True)
     kb.row(KeyboardButton("✅ Открытие кухни"), KeyboardButton("🔴 Закрытие кухни"))
+    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
     kb.row(KeyboardButton("🛢 Замена масла"), KeyboardButton("📊 Остатки кухни"))
-    kb.row(KeyboardButton("🏠 Главное меню"))
+    kb.row(KeyboardButton("🧹 Уборка кухни"), KeyboardButton("🏠 Главное меню"))
     return kb
 
 def prep_menu():
@@ -267,7 +352,7 @@ def prep_menu():
     kb.row(KeyboardButton("🏠 Главное меню"))
     return kb
 
-def leyla_menu():
+def dough_menu():
     kb = ReplyKeyboardMarkup(resize_keyboard=True)
     kb.row(KeyboardButton("✅ Задачи по тесту"))
     kb.row(KeyboardButton("🏠 Главное меню"))
@@ -284,6 +369,7 @@ def manager_menu():
     kb.row(KeyboardButton("📊 Сводка дня"), KeyboardButton("⛔ Стоп-лист"))
     kb.row(KeyboardButton("⚠️ Возвраты"), KeyboardButton("🛢 Статус масла"))
     kb.row(KeyboardButton("⚠️ Низкие остатки"), KeyboardButton("🛒 Список закупа"))
+    kb.row(KeyboardButton("📞 Поставщики"), KeyboardButton("🏪 Ближайший магазин"))
     kb.row(KeyboardButton("🏠 Главное меню"))
     return kb
 
@@ -323,15 +409,15 @@ def kitchen(msg):
     set_state(msg.from_user.id, step="kitchen")
     bot.send_message(msg.chat.id, "👨‍🍳 <b>Режим кухни</b>", reply_markup=kitchen_menu(), parse_mode="HTML")
 
-@bot.message_handler(func=lambda m: m.text == "🔪 Заготовщик (Айша)")
+@bot.message_handler(func=lambda m: m.text == "🔪 Заготовщик")
 def prep(msg):
     set_state(msg.from_user.id, step="prep")
     bot.send_message(msg.chat.id, "🔪 <b>Заготовщик</b>", reply_markup=prep_menu(), parse_mode="HTML")
 
-@bot.message_handler(func=lambda m: m.text == "🥖 Тесто (Лейла)")
-def leyla(msg):
-    set_state(msg.from_user.id, step="leyla")
-    bot.send_message(msg.chat.id, "🥖 <b>Заготовка теста</b>", reply_markup=leyla_menu(), parse_mode="HTML")
+@bot.message_handler(func=lambda m: m.text == "🥖 Тесто")
+def dough(msg):
+    set_state(msg.from_user.id, step="dough")
+    bot.send_message(msg.chat.id, "🥖 <b>Заготовка теста</b>", reply_markup=dough_menu(), parse_mode="HTML")
 
 @bot.message_handler(func=lambda m: m.text == "📊 Бухгалтер")
 def accountant(msg):
@@ -404,17 +490,17 @@ def close_kitchen(msg):
 
 @bot.message_handler(func=lambda m: m.text == "✅ Задачи заготовщика")
 def prep_tasks(msg):
-    start_checklist(msg.from_user.id, msg.chat.id, PREP_AYSHA,
-        "Заготовщик (Айша)", "Заготовки выполнены!", "Заготовщик", prep_menu())
+    start_checklist(msg.from_user.id, msg.chat.id, PREP_TASKS,
+        "Заготовщик", "Заготовки выполнены!", "Заготовщик", prep_menu())
 
 @bot.message_handler(func=lambda m: m.text == "✅ Задачи по тесту")
-def leyla_tasks(msg):
-    start_checklist(msg.from_user.id, msg.chat.id, PREP_LEYLA,
-        "Тесто (Лейла)", "Тесто готово!", "Тесто Лейла", leyla_menu())
+def dough_tasks(msg):
+    start_checklist(msg.from_user.id, msg.chat.id, DOUGH_TASKS,
+        "Тесто", "Тесто готово!", "Тесто", dough_menu())
 
 @bot.message_handler(func=lambda m: m.text == "✅ Задачи бухгалтера")
 def accountant_tasks(msg):
-    start_checklist(msg.from_user.id, msg.chat.id, ACCOUNTANT,
+    start_checklist(msg.from_user.id, msg.chat.id, ACCOUNTANT_TASKS,
         "Бухгалтер", "Задачи выполнены!", "Бухгалтер", accountant_menu())
 
 @bot.message_handler(func=lambda m: m.text in ["✅ Да", "❌ Нет"] and
@@ -428,7 +514,7 @@ def checklist_answer(msg):
     send_check_item(uid, msg.chat.id)
 
 # ── СТОП-ЛИСТ ────────────────────────────────────────────────────────────────
-@bot.message_handler(func=lambda m: m.text in ["⛔ Стоп-лист", "⛔ Стоп-лист"])
+@bot.message_handler(func=lambda m: m.text == "⛔ Стоп-лист")
 def show_stoplist(msg):
     bot.send_message(msg.chat.id,
         "⛔ <b>Стоп-лист</b>\nНажми на позицию чтобы изменить:",
@@ -444,49 +530,21 @@ def toggle_stop(call):
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=stoplist_kb())
     bot.answer_callback_query(call.id)
 
-# ── СОКИ (КАССИР) ────────────────────────────────────────────────────────────
-@bot.message_handler(func=lambda m: m.text == "🥤 Соки")
-def start_drinks(msg):
-    uid = msg.from_user.id
-    stock_session[uid] = {"items": DRINKS, "idx": 0, "results": {}, "type": "drinks"}
+# ── ОСТАТКИ ───────────────────────────────────────────────────────────────────
+def start_stock(uid, cid, items, stype, back):
+    stock_session[uid] = {"items": items, "idx": 0, "results": {}, "type": stype, "back": back}
     set_state(uid, step="stock_input")
-    send_stock_item(uid, msg.chat.id)
-
-# ── УПАКОВКА (КАССИР) ────────────────────────────────────────────────────────
-@bot.message_handler(func=lambda m: m.text == "📦 Упаковка")
-def start_packaging(msg):
-    uid = msg.from_user.id
-    stock_session[uid] = {"items": PACKAGING, "idx": 0, "results": {}, "type": "packaging"}
-    set_state(uid, step="stock_input")
-    send_stock_item(uid, msg.chat.id)
-
-# ── ОСТАТКИ КУХНИ ────────────────────────────────────────────────────────────
-@bot.message_handler(func=lambda m: m.text == "📊 Остатки кухни")
-def start_kitchen_stock(msg):
-    uid = msg.from_user.id
-    items = [(k, v) for k, v in STOCK_MINS.items()]
-    stock_session[uid] = {"items": items, "idx": 0, "results": {}, "type": "kitchen"}
-    set_state(uid, step="stock_input")
-    send_stock_item(uid, msg.chat.id)
-
-@bot.message_handler(func=lambda m: m.text == "📊 Остатки заготовок")
-def start_prep_stock(msg):
-    uid = msg.from_user.id
-    items = [(k, v) for k, v in STOCK_MINS.items() if "Тесто" in k or "Курица" in k or "Соус" in k]
-    stock_session[uid] = {"items": items, "idx": 0, "results": {}, "type": "prep"}
-    set_state(uid, step="stock_input")
-    send_stock_item(uid, msg.chat.id)
+    send_stock_item(uid, cid)
 
 def send_stock_item(uid, cid):
     s = stock_session[uid]
     idx = s["idx"]
-    items = s["items"]
-    if idx >= len(items):
+    if idx >= len(s["items"]):
         finish_stock(uid, cid)
         return
-    name, mn = items[idx]
+    name, mn = s["items"][idx]
     bot.send_message(cid,
-        f"📊 [{idx+1}/{len(items)}]\n\n<b>{name}</b>\nМинимум: {mn}\n\nСколько сейчас?",
+        f"📊 [{idx+1}/{len(s['items'])}]\n\n<b>{name}</b>\nМинимум: {mn}\n\nСколько сейчас?",
         parse_mode="HTML")
 
 def finish_stock(uid, cid):
@@ -498,16 +556,33 @@ def finish_stock(uid, cid):
         for name, qty, mn in low:
             text += f"• {name}: {qty} (мин. {mn})\n"
         low_stock_alerts.extend(low)
-    else:
-        text += "✅ Всё в норме!"
-    back = cashier_menu() if s["type"] in ["drinks", "packaging"] else kitchen_menu()
-    bot.send_message(cid, text, parse_mode="HTML", reply_markup=back)
-    if low:
         notify_text = f"⚠️ <b>НИЗКИЕ ОСТАТКИ</b> — {now_str()}\n\n"
         for name, qty, mn in low:
             notify_text += f"• {name}: {qty}/{mn}\n"
         notify_manager(notify_text)
+    else:
+        text += "✅ Всё в норме!"
+    bot.send_message(cid, text, parse_mode="HTML", reply_markup=s["back"])
     set_state(uid, step=s["type"])
+
+@bot.message_handler(func=lambda m: m.text == "🥤 Соки")
+def start_drinks(msg):
+    start_stock(msg.from_user.id, msg.chat.id, DRINKS, "cashier", cashier_menu())
+
+@bot.message_handler(func=lambda m: m.text == "📦 Упаковка")
+def start_packaging(msg):
+    start_stock(msg.from_user.id, msg.chat.id, PACKAGING, "cashier", cashier_menu())
+
+@bot.message_handler(func=lambda m: m.text == "📊 Остатки кухни")
+def start_kitchen_stock(msg):
+    items = [(k, v) for k, v in STOCK_MINS.items()]
+    start_stock(msg.from_user.id, msg.chat.id, items, "kitchen", kitchen_menu())
+
+@bot.message_handler(func=lambda m: m.text == "📊 Остатки заготовок")
+def start_prep_stock(msg):
+    items = [(k, v) for k, v in STOCK_MINS.items()
+             if any(w in k for w in ["Тесто", "Курица", "Соус", "Фарш"])]
+    start_stock(msg.from_user.id, msg.chat.id, items, "prep", prep_menu())
 
 @bot.message_handler(func=lambda m: get_state(m.from_user.id).get("step") == "stock_input")
 def stock_input(msg):
@@ -639,132 +714,16 @@ def finish_delivery(uid, cid):
     )
     set_state(uid, step="main")
 
-# ── МЕНЕДЖЕР ─────────────────────────────────────────────────────────────────
-@bot.message_handler(func=lambda m: m.text == "📊 Сводка дня")
-def daily_summary(msg):
-    if msg.from_user.id != MANAGER_ID: return
-    stops = [k for k, v in stoplist.items() if not v]
-    text = f"📊 <b>СВОДКА ПИЦЦА ХАН</b>\n{now_str()}\n\n"
-    text += f"⛔ В стопе: {', '.join(stops) if stops else 'нет'}\n"
-    text += f"⚠️ Возвратов: {len(returns_today)}\n"
-    text += f"📉 Низких остатков: {len(low_stock_alerts)}\n"
-    text += "\n🛢 Масло:\n"
-    for fr, t in oil_log.items():
-        text += f"  • {fr}: {t}\n"
-    if not oil_log: text += "  • Не менялось\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
-
-@bot.message_handler(func=lambda m: m.text == "⚠️ Возвраты")
-def show_returns(msg):
-    if msg.from_user.id != MANAGER_ID: return
-    if not returns_today:
-        bot.send_message(msg.chat.id, "✅ Возвратов нет.", reply_markup=manager_menu())
-        return
-    text = f"⚠️ <b>Возвраты ({len(returns_today)}):</b>\n\n"
-    for r in returns_today:
-        text += f"• {r['item']} — {r['reason']} ({r['time']})\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
-
-@bot.message_handler(func=lambda m: m.text == "🛢 Статус масла")
-def show_oil(msg):
-    if msg.from_user.id != MANAGER_ID: return
-    text = "🛢 <b>Статус масла:</b>\n\n"
-    for fr in ["🛢 Фри (картофель)", "🛢 Чикен (курица)"]:
-        t = oil_log.get(fr, "❌ Не менялось")
-        text += f"• {fr}: {t}\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
-
-@bot.message_handler(func=lambda m: m.text == "⚠️ Низкие остатки")
-def show_low(msg):
-    if msg.from_user.id != MANAGER_ID: return
-    if not low_stock_alerts:
-        bot.send_message(msg.chat.id, "✅ Все остатки в норме!", reply_markup=manager_menu())
-        return
-    text = f"⚠️ <b>Низкие остатки:</b>\n\n"
-    for name, qty, mn in low_stock_alerts[-20:]:
-        text += f"• {name}: {qty}/{mn}\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
-
-@bot.message_handler(func=lambda m: m.text == "🛒 Список закупа")
-def show_purchase(msg):
-    if msg.from_user.id != MANAGER_ID: return
-    if not low_stock_alerts:
-        bot.send_message(msg.chat.id, "✅ Заказывать ничего не нужно!", reply_markup=manager_menu())
-        return
-    text = f"🛒 <b>СПИСОК ЗАКУПА — {now_str()}</b>\n\n"
-    for name, qty, mn in low_stock_alerts:
-        text += f"• {name}: есть {qty}, нужно мин. {mn}\n"
-    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
-
-# ── ЗАДАЧИ НА ПРОСТОЙ ────────────────────────────────────────────────────────
-IDLE_CASHIER = [
-    "🧹 Протереть все столы и стулья в зале",
-    "🧹 Протереть барную стойку и полки",
-    "🍯 Протереть и пополнить сиропы",
-    "📦 Проверить и пополнить упаковку на стойке",
-    "🥤 Проверить и пополнить напитки в холодильнике",
-    "🫙 Пополнить соусницы (кетчуп, соус для Чикен Сырный)",
-    "🚽 Проверить мойку убрать вымыт посуду",
-    "📱 Проверить агрегаторы — нет ли новых заказов",
-    "🧽 Вымыть посуду если есть",
-    "🗑 Проверить мусор — вынести если полный",
-]
-
-IDLE_KITCHEN = [
-    "🧹 Убрать и протереть рабочую станцию",
-    "🔪 Нарезать дополнительные овощи про запас",
-    "🧀 Натереть дополнительный сыр",
-    "🌭 Нарезать дополнительную колбасу",
-    "🍗 Проверить курицу на разморозке",
-    "📊 Проверить и обновить остатки в боте",
-    "🛢 Проверить масло фритюра",
-    "🧽 Помыть инвентарь и лотки ",
-    "❄️ Проверить порядок в холодильнике",
-    "🧹 Подмести и помыть полы на кухне",
-]
-
 # ── ПЕРЕДАЧА СМЕНЫ ────────────────────────────────────────────────────────────
-HANDOVER_NIGHT = [
-    "💵 Деньги пересчитаны и сфотографированы",
-    "🗑 Мусор вынесен",
-    "🧹 Полы на кухне помыты",
-    "🧽 Столы и поверхности на кухне помыты",
-    "❄️ Заготовки убраны в холодильник/морозилку",
-    "📱 Рабочий телефон заряжен",
-    "🔌 Всё оборудование выключено (кроме холодильников)",
-    "🚽 Туалет убран",
-    "🧹 Зал убран, столы протёрты",
-]
-
-HANDOVER_STOCKS = [
-    ("🍗 Курица для донера (кг)", 5),
-    ("🍗 Курица для пиццы (кг)", 5),
-    ("🍞 Булочки (шт)", 40),
-    ("🌯 Лаваш (шт)", 100),
-    ("🧀 Сыр натёртый (кг)", 15),
-    ("🥤 Кола 1л (шт)", 10),
-    ("🍟 Фри (кг)", 10),
-    ("🍕 Тесто малое (шт)", 30),
-    ("🍕 Тесто среднее (шт)", 30),
-]
-
-handover_session = {}
-
 @bot.message_handler(func=lambda m: m.text == "🔄 Передача смены")
 def start_handover(msg):
     uid = msg.from_user.id
     handover_session[uid] = {
-        "step": "checklist",
-        "idx": 0,
-        "results": [],
-        "stocks": {},
-        "stock_idx": 0,
-        "notes": "",
-        "shift": "night"
+        "idx": 0, "results": [], "stocks": {}, "stock_idx": 0, "notes": ""
     }
     set_state(uid, step="handover_check")
     bot.send_message(msg.chat.id,
-        "🔄 <b>Передача смены</b>\n\nПроходим по чеклисту закрытия:",
+        "🔄 <b>Передача смены</b>\n\nПроходим по чеклисту:",
         reply_markup=yes_no_kb(), parse_mode="HTML")
     send_handover_item(uid, msg.chat.id)
 
@@ -772,8 +731,6 @@ def send_handover_item(uid, cid):
     s = handover_session[uid]
     idx = s["idx"]
     if idx >= len(HANDOVER_NIGHT):
-        # Переходим к остаткам
-        s["step"] = "stocks"
         s["stock_idx"] = 0
         send_handover_stock(uid, cid)
         return
@@ -786,13 +743,10 @@ def send_handover_stock(uid, cid):
     s = handover_session[uid]
     idx = s["stock_idx"]
     if idx >= len(HANDOVER_STOCKS):
-        # Переходим к замечаниям
-        s["step"] = "notes"
         set_state(uid, step="handover_notes")
         bot.send_message(cid,
             "📝 Есть замечания для следующей смены?\n\nНапишите текст или нажмите 'Нет замечаний'",
-            reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(
-                KeyboardButton("Нет замечаний")))
+            reply_markup=ReplyKeyboardMarkup(resize_keyboard=True).add(KeyboardButton("Нет замечаний")))
         return
     name, mn = HANDOVER_STOCKS[idx]
     bot.send_message(cid,
@@ -832,12 +786,10 @@ def handover_notes(msg):
     s["notes"] = "" if msg.text == "Нет замечаний" else msg.text
     finish_handover(uid, msg.chat.id, msg.from_user.first_name)
 
-def finish_handover(uid, cid, name):
+def finish_handover(uid, cid, who):
     s = handover_session[uid]
     failed = [r["item"] for r in s["results"] if not r["ok"]]
     low = [(n, q, mn) for (n, mn), q in zip(HANDOVER_STOCKS, s["stocks"].values()) if q < mn]
-
-    # Сообщение сотруднику
     text = f"✅ <b>Смена сдана!</b>\n{now_str()}\n"
     if failed:
         text += f"\n❌ Не выполнено ({len(failed)}):\n"
@@ -845,20 +797,16 @@ def finish_handover(uid, cid, name):
     else:
         text += "\n✅ Всё выполнено!"
     bot.send_message(cid, text, reply_markup=main_menu(), parse_mode="HTML")
-
-    # Отчёт менеджеру
-    report = f"🔄 <b>ПЕРЕДАЧА СМЕНЫ</b>\n{now_str()}\nСдал: {name}\n\n"
+    report = f"🔄 <b>ПЕРЕДАЧА СМЕНЫ</b>\n{now_str()}\nСдал: {who}\n\n"
     done = len([r for r in s["results"] if r["ok"]])
-    total = len(s["results"])
-    report += f"📋 Чеклист: {done}/{total}\n"
+    report += f"📋 Чеклист: {done}/{len(s['results'])}\n"
     if failed:
         report += "\n❌ НЕ ВЫПОЛНЕНО:\n"
         for f in failed: report += f"• {f}\n"
     if s["stocks"]:
         report += "\n📊 ОСТАТКИ:\n"
-        for (name_s, mn), qty in zip(HANDOVER_STOCKS, s["stocks"].values()):
-            warn = " ⚠️" if qty < mn else " ✅"
-            report += f"• {name_s}: {qty}{warn}\n"
+        for (n, mn), qty in zip(HANDOVER_STOCKS, s["stocks"].values()):
+            report += f"• {n}: {qty} {'⚠️' if qty < mn else '✅'}\n"
     if low:
         report += "\n🛒 НУЖНО ЗАКАЗАТЬ:\n"
         for n, q, mn in low: report += f"• {n}: {q} (мин. {mn})\n"
@@ -871,38 +819,130 @@ def finish_handover(uid, cid, name):
 @bot.message_handler(func=lambda m: m.text == "😴 Нет заказов")
 def idle_tasks(msg):
     uid = msg.from_user.id
-    state = get_state(uid)
-    role = state.get("step", "cashier")
+    role = get_state(uid).get("step", "cashier")
     if role == "kitchen":
-        items = IDLE_KITCHEN
-        title = "👨‍🍳 Задачи кухни на простой"
-        back = kitchen_menu()
+        items, title, back = IDLE_KITCHEN, "👨‍🍳 Задачи кухни на простой", kitchen_menu()
     else:
-        items = IDLE_CASHIER
-        title = "🧾 Задачи кассира на простой"
-        back = cashier_menu()
+        items, title, back = IDLE_CASHIER, "🧾 Задачи кассира на простой", cashier_menu()
     text = f"😴 <b>{title}</b>\n\n"
     for i, item in enumerate(items, 1):
         text += f"{i}. {item}\n"
     bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=back)
 
-# Обновляем меню кассира и кухни с новыми кнопками
-def cashier_menu():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.row(KeyboardButton("✅ Открытие смены"), KeyboardButton("🔴 Закрытие смены"))
-    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
-    kb.row(KeyboardButton("⛔ Стоп-лист"), KeyboardButton("🥤 Соки"))
-    kb.row(KeyboardButton("📦 Упаковка"), KeyboardButton("⚠️ Возврат/Жалоба"))
-    kb.row(KeyboardButton("🏠 Главное меню"))
-    return kb
+# ── МЕНЕДЖЕР ─────────────────────────────────────────────────────────────────
+@bot.message_handler(func=lambda m: m.text == "📊 Сводка дня")
+def daily_summary(msg):
+    if msg.from_user.id != MANAGER_ID: return
+    stops = [k for k, v in stoplist.items() if not v]
+    text = f"📊 <b>СВОДКА ПИЦЦА ХАН</b>\n{now_str()}\n\n"
+    text += f"⛔ В стопе: {', '.join(stops) if stops else 'нет'}\n"
+    text += f"⚠️ Возвратов: {len(returns_today)}\n"
+    text += f"📉 Низких остатков: {len(low_stock_alerts)}\n"
+    text += "\n🛢 Масло:\n"
+    for fr, t in oil_log.items():
+        text += f"  • {fr}: {t}\n"
+    if not oil_log: text += "  • Не менялось\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
 
-def kitchen_menu():
-    kb = ReplyKeyboardMarkup(resize_keyboard=True)
-    kb.row(KeyboardButton("✅ Открытие кухни"), KeyboardButton("🔴 Закрытие кухни"))
-    kb.row(KeyboardButton("🔄 Передача смены"), KeyboardButton("😴 Нет заказов"))
-    kb.row(KeyboardButton("🛢 Замена масла"), KeyboardButton("📊 Остатки кухни"))
-    kb.row(KeyboardButton("🏠 Главное меню"))
-    return kb
+@bot.message_handler(func=lambda m: m.text == "⚠️ Возвраты")
+def show_returns(msg):
+    if msg.from_user.id != MANAGER_ID: return
+    if not returns_today:
+        bot.send_message(msg.chat.id, "✅ Возвратов нет.", reply_markup=manager_menu())
+        return
+    text = f"⚠️ <b>Возвраты ({len(returns_today)}):</b>\n\n"
+    for r in returns_today:
+        text += f"• {r['item']} — {r['reason']} ({r['time']})\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+@bot.message_handler(func=lambda m: m.text == "🛢 Статус масла")
+def show_oil(msg):
+    if msg.from_user.id != MANAGER_ID: return
+    text = "🛢 <b>Статус масла:</b>\n\n"
+    for fr in ["🛢 Фри (картофель)", "🛢 Чикен (курица)"]:
+        text += f"• {fr}: {oil_log.get(fr, '❌ Не менялось')}\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+@bot.message_handler(func=lambda m: m.text == "⚠️ Низкие остатки")
+def show_low(msg):
+    if msg.from_user.id != MANAGER_ID: return
+    if not low_stock_alerts:
+        bot.send_message(msg.chat.id, "✅ Все остатки в норме!", reply_markup=manager_menu())
+        return
+    text = "⚠️ <b>Низкие остатки:</b>\n\n"
+    for name, qty, mn in low_stock_alerts[-20:]:
+        text += f"• {name}: {qty}/{mn}\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+@bot.message_handler(func=lambda m: m.text == "🛒 Список закупа")
+def show_purchase(msg):
+    if msg.from_user.id != MANAGER_ID: return
+    if not low_stock_alerts:
+        bot.send_message(msg.chat.id, "✅ Заказывать ничего не нужно!", reply_markup=manager_menu())
+        return
+    text = f"🛒 <b>СПИСОК ЗАКУПА — {now_str()}</b>\n\n"
+    for name, qty, mn in low_stock_alerts:
+        text += f"• {name}: есть {qty}, нужно мин. {mn}\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+@bot.message_handler(func=lambda m: m.text == "📞 Поставщики")
+def show_suppliers(msg):
+    text = "📞 <b>ПОСТАВЩИКИ ПИЦЦА ХАН</b>\n\n"
+    for name, info in SUPPLIERS_INFO.items():
+        text += f"{name}\n"
+        text += f"📱 {info['phone']}\n"
+        text += f"🛒 {info['items']}\n\n"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+@bot.message_handler(func=lambda m: m.text == "🏪 Ближайший магазин")
+def show_nearby(msg):
+    text = f"🏪 <b>БЛИЖАЙШИЙ МАГАЗИН</b>\n\n{NEARBY}\n\n"
+    text += "🚗 Доставка с рынка Хозторг:\n"
+    text += "Асқар ага: 87013640638\n"
+    text += "Стоимость: 2000 тг"
+    bot.send_message(msg.chat.id, text, parse_mode="HTML", reply_markup=manager_menu())
+
+# ── ПЕЙДЖЕР (ВЫЗОВ КЛИЕНТА) ───────────────────────────────────────────────────
+@bot.message_handler(func=lambda m: m.text == "🔔 Пейджер")
+def pager(msg):
+    set_state(msg.from_user.id, step="pager_input")
+    bot.send_message(msg.chat.id,
+        "🔔 <b>Вызов клиента</b>\n\nВведите номер заказа или имя клиента:",
+        parse_mode="HTML")
+
+@bot.message_handler(func=lambda m: get_state(m.from_user.id).get("step") == "pager_input")
+def pager_input(msg):
+    uid = msg.from_user.id
+    order = msg.text.strip()
+    bot.send_message(msg.chat.id,
+        f"✅ Заказ <b>{order}</b> готов!\n\nКлиент вызван.",
+        reply_markup=cashier_menu(), parse_mode="HTML")
+    notify_manager(f"🔔 <b>Пейджер</b>\nЗаказ готов: {order}\n{now_str()}")
+    set_state(uid, step="cashier")
+
+# ── УБОРКА КУХНИ ─────────────────────────────────────────────────────────────
+KITCHEN_CLEAN = [
+    "🧹 Протереть все рабочие поверхности (столы, станции)",
+    "🧹 Задняя сторона столов — протереть, убрать остатки еды",
+    "🔥 Протереть гриль снаружи",
+    "🔥 Почистить фритюрницу снаружи",
+    "🍕 Протереть пицца-печь снаружи",
+    "🔪 Весь инвентарь убрать на своё место",
+    "📌 Проверить стандарты на стене — всё соблюдено?",
+    "🍕 Пицца станция — всё стоит по порядку (по стандарту)",
+    "🌯 Донер станция — порядок соблюдён",
+    "🍔 Бургер станция — порядок соблюдён",
+    "❄️ Холодильник — лотки на своих местах, ничего лишнего",
+    "🧽 Помыть все лотки и инвентарь",
+    "🧹 Подмести пол на кухне",
+    "🧹 Помыть пол на кухне",
+    "🗑 Вынести мусор из кухни",
+]
+
+@bot.message_handler(func=lambda m: m.text == "🧹 Уборка кухни")
+def kitchen_clean(msg):
+    start_checklist(msg.from_user.id, msg.chat.id, KITCHEN_CLEAN,
+        "Уборка кухни", "Кухня убрана!", "Уборка кухни", kitchen_menu())
 
 print("🍕 Пицца Хан бот v2 запущен!")
 bot.infinity_polling()
